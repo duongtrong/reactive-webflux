@@ -5,6 +5,7 @@ import com.developer.webflux.exception.CustomException;
 import com.developer.webflux.service.EmployeeService;
 import com.developer.webflux.util.AbstractEndpoint;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -37,25 +37,19 @@ public class EmployeeController extends AbstractEndpoint {
     private final EmployeeService employeeService;
 
     @GetMapping
-    public DeferredResult<Flux<Object>> getAllEmployees() {
+    public DeferredResult<ResponseEntity<Object>> getAllEmployees() {
         return toDeferredResult(
                 new DeferredResult<>(),
-                employeeService.getAllEmployees(),
-                Locale.getDefault());
+                employeeService.getAllEmployees());
     }
 
     @PostMapping
-    public DeferredResult<Mono<Object>> createEmployee(@Validated @RequestBody EmployeeDTO employeeDTO, BindingResult bindingResult) {
+    public DeferredResult<ResponseEntity<Object>> createEmployee(@Validated @RequestBody EmployeeDTO employeeDTO, BindingResult bindingResult) {
         return toDeferredResult(
                 new DeferredResult<>(),
                 toObservable(bindingResult)
-                        .flatMap(to -> employeeService.isExistUsername(employeeDTO.getUsername())
-                                .flatMap(vu -> Mono.error(() -> new CustomException("Username not found")))
-                                .subscribeOn(Schedulers.boundedElastic())) 
                         .flatMap(v -> employeeService.createEmployee(employeeDTO))
                         .subscribeOn(Schedulers.boundedElastic()),
-                bindingResult,
-                Locale.getDefault());
+                bindingResult);
     }
-
 }

@@ -19,8 +19,6 @@ import java.util.List;
 public interface EmployeeService {
     
     Flux<List<EmployeeDTO>> getAllEmployees();
-    
-    Mono<Employee> createEmployee(EmployeeDTO employee);
-    
-    Mono<Employee> isExistUsername(String fullName);
+
+    Mono<EmployeeDTO> createEmployee(EmployeeDTO employee);
 }

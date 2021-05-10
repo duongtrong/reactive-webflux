@@ -1,6 +1,6 @@
 package com.developer.webflux.util;
 
-import com.developer.webflux.constant.EmployeeConstant;
+import com.developer.webflux.constant.ResponseEntityStatusConstant;
 import com.developer.webflux.dto.EmployeeAPIResponseEntity;
 import com.developer.webflux.dto.ErrorDetails;
 import com.developer.webflux.exception.CustomException;
@@ -43,8 +43,8 @@ public abstract class AbstractEndpoint {
             @Override
             public void onNext(T t) {
                 ResponseEntity<EmployeeAPIResponseEntity<T>> response = new ResponseEntity<>(
-                        new EmployeeAPIResponseEntity<>(EmployeeConstant.SUCCESS.getCode(),
-                                EmployeeConstant.SUCCESS.getMessage(), t), HttpStatus.OK);
+                        new EmployeeAPIResponseEntity<>(ResponseEntityStatusConstant.SUCCESS.getCode(),
+                                ResponseEntityStatusConstant.SUCCESS.getMessage(), t), HttpStatus.OK);
                 deferredResult.setResult((P) response);
             }
 
@@ -77,8 +77,8 @@ public abstract class AbstractEndpoint {
             @Override
             protected void hookOnNext(T t) {
                 ResponseEntity<EmployeeAPIResponseEntity<T>> response = new ResponseEntity<>(
-                        new EmployeeAPIResponseEntity<>(EmployeeConstant.SUCCESS.getCode(),
-                                EmployeeConstant.SUCCESS.getMessage(), t), HttpStatus.OK);
+                        new EmployeeAPIResponseEntity<>(ResponseEntityStatusConstant.SUCCESS.getCode(),
+                                ResponseEntityStatusConstant.SUCCESS.getMessage(), t), HttpStatus.OK);
                 deferredResult.setResult((P) response);
             }
 
@@ -118,8 +118,8 @@ public abstract class AbstractEndpoint {
             @Override
             protected void hookOnNext(T t) {
                 ResponseEntity<EmployeeAPIResponseEntity<T>> response = new ResponseEntity<>(
-                        new EmployeeAPIResponseEntity<>(EmployeeConstant.SUCCESS.getCode(),
-                                EmployeeConstant.SUCCESS.getMessage(), t), HttpStatus.OK);
+                        new EmployeeAPIResponseEntity<>(ResponseEntityStatusConstant.SUCCESS.getCode(),
+                                ResponseEntityStatusConstant.SUCCESS.getMessage(), t), HttpStatus.OK);
                 deferredResult.setResult((P) response);
             }
 
@@ -158,8 +158,8 @@ public abstract class AbstractEndpoint {
             @Override
             public void onNext(T t) {
                 ResponseEntity<EmployeeAPIResponseEntity<T>> response = new ResponseEntity<>(
-                        new EmployeeAPIResponseEntity<>(EmployeeConstant.SUCCESS.getCode(),
-                                EmployeeConstant.SUCCESS.getMessage(), t), HttpStatus.OK);
+                        new EmployeeAPIResponseEntity<>(ResponseEntityStatusConstant.SUCCESS.getCode(),
+                                ResponseEntityStatusConstant.SUCCESS.getMessage(), t), HttpStatus.OK);
                 deferredResult.setResult((P) response);
             }
 
@@ -189,6 +189,6 @@ public abstract class AbstractEndpoint {
                                 return Mono.just(v);
                             }
                         }
-                ).subscribeOn(Schedulers.boundedElastic());
+                ).subscribeOn(Schedulers.single());
     }
 }

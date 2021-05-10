@@ -1,11 +1,8 @@
 package com.developer.webflux.service;
 
 import com.developer.webflux.dto.EmployeeDTO;
-import com.developer.webflux.model.Employee;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 /**
  * webflux
@@ -17,8 +14,8 @@ import java.util.List;
  * @since 06/05/2021
  **/
 public interface EmployeeService {
-    
-    Flux<List<EmployeeDTO>> getAllEmployees();
+
+    Flux<EmployeeDTO> getAllEmployees();
 
     Mono<EmployeeDTO> createEmployee(EmployeeDTO employee);
 }

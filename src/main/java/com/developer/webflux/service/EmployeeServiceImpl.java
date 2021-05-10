@@ -1,19 +1,19 @@
 package com.developer.webflux.service;
 
 import com.developer.webflux.dto.EmployeeDTO;
+import com.developer.webflux.exception.CustomException;
 import com.developer.webflux.model.Employee;
 import com.developer.webflux.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Subscription;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * webflux
@@ -33,24 +33,34 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     @Override
-    @Transactional(readOnly = true)
-    public Flux<List<EmployeeDTO>> getAllEmployees() {
-        return employeeRepository.findAll().log()
-                .publishOn(Schedulers.boundedElastic())
-                .map(EmployeeDTO::new).buffer();
+    public Flux<EmployeeDTO> getAllEmployees() {
+        return employeeRepository.findAll()
+                .map(EmployeeDTO::new);
     }
 
     @Override
     public Mono<EmployeeDTO> createEmployee(EmployeeDTO employeeDTO) {
-        return Mono.fromCallable(() ->
-                Employee.builder()
+        ExecutorService executorService = new java.util.concurrent.ThreadPoolExecutor(6, 50,
+                60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+        return Mono.fromCallable(
+                () -> Employee.builder()
                         .username(employeeDTO.getUsername())
                         .fullName(employeeDTO.getFullName())
                         .dateOfBirth(employeeDTO.getDateOfBirth())
                         .age(employeeDTO.getAge())
                         .build())
-                .flatMap(employee -> employeeRepository.save(employee)
-                        .publishOn(Schedulers.boundedElastic())
-                        .map(EmployeeDTO::new));
+                .flatMap(
+                        x -> employeeRepository.existsByUsername(x.getUsername()).log()
+                                .publishOn(Schedulers.fromExecutorService(executorService))
+                                .flatMap(
+                                        exist -> {
+                                            if (Boolean.TRUE.equals(exist)) {
+                                                return Mono.error(new CustomException("Username already exist!"));
+                                            }
+                                            return employeeRepository.save(x)
+                                                    .map(EmployeeDTO::new);
+                                        }
+                                )
+                );
     }
 }

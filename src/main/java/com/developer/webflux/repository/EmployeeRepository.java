@@ -3,8 +3,7 @@ package com.developer.webflux.repository;
 import com.developer.webflux.model.Employee;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 /**
  * webflux
@@ -18,6 +17,6 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends R2dbcRepository<Employee, String> {
-    
-    Optional<Employee> existsByUsername(String username);
+
+    Mono<Boolean> existsByUsername(String username);
 }

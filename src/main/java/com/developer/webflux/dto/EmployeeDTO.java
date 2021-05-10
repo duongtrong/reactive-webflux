@@ -1,11 +1,13 @@
 package com.developer.webflux.dto;
 
 import com.developer.webflux.model.Employee;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -22,9 +24,12 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeDTO implements Serializable {
 
+    @NotNull(message = "username not be null")
     private String username;
+    @NotNull(message = "fullName not be null")
     private String fullName;
     private String dateOfBirth;
     private int age;

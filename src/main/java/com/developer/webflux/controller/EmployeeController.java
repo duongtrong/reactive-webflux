@@ -1,14 +1,17 @@
 package com.developer.webflux.controller;
 
-import com.developer.webflux.dto.EmployeeDTO;
+import com.developer.webflux.dto.EmployeeDto;
 import com.developer.webflux.service.EmployeeService;
 import com.developer.webflux.util.AbstractEndpoint;
 import com.developer.webflux.util.ResponseEntityUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +27,7 @@ import reactor.core.publisher.Mono;
  * @since 06/05/2021
  **/
 
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/employees")
@@ -33,11 +37,25 @@ public class EmployeeController extends AbstractEndpoint {
 
     @GetMapping
     public Mono<ResponseEntity<Object>> getAllEmployees() {
+        log.info("Request get all employees.");
         return employeeService.getAllEmployees().collectList().map(ResponseEntityUtil::ok);
     }
 
     @PostMapping
-    public Mono<ResponseEntity<Object>> createEmployee(@Validated @RequestBody EmployeeDTO employeeDTO) {
+    public Mono<ResponseEntity<Object>> createEmployee(@Validated @RequestBody EmployeeDto employeeDTO) {
+        log.info("Request created new object employee.");
         return employeeService.createEmployee(employeeDTO).map(ResponseEntityUtil::created);
+    }
+    
+    @PutMapping
+    public Mono<ResponseEntity<Object>> updateEmployee(@Validated @RequestBody EmployeeDto employeeDTO) {
+        log.info("Request update object employee.");
+        return employeeService.updateEmployee(employeeDTO).map(ResponseEntityUtil::ok);
+    }
+    
+    @GetMapping("/{id}")
+    public Mono<ResponseEntity<Object>> getEmployee(@PathVariable("id") String id) {
+        log.info("Request get employee by ID: {}", id);
+        return employeeService.getSingleEmployee(id).map(EmployeeDto::new).map(ResponseEntityUtil::ok);
     }
 }

@@ -25,8 +25,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EmployeeDTO implements Serializable {
+public class EmployeeDto implements Serializable {
 
+    private String id;
     @NotNull(message = "username not be null")
     private String username;
     @NotNull(message = "fullName not be null")
@@ -34,7 +35,7 @@ public class EmployeeDTO implements Serializable {
     private String dateOfBirth;
     private int age;
 
-    public EmployeeDTO(Employee employee) {
+    public EmployeeDto(Employee employee) {
         this.username = employee.getUsername();
         this.fullName = employee.getFullName();
         this.dateOfBirth = employee.getDateOfBirth();

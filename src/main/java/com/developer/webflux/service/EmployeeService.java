@@ -1,6 +1,7 @@
 package com.developer.webflux.service;
 
-import com.developer.webflux.dto.EmployeeDTO;
+import com.developer.webflux.dto.EmployeeDto;
+import com.developer.webflux.model.Employee;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +16,11 @@ import reactor.core.publisher.Mono;
  **/
 public interface EmployeeService {
 
-    Flux<EmployeeDTO> getAllEmployees();
+    Flux<EmployeeDto> getAllEmployees();
+    
+    Mono<Employee> getSingleEmployee(String id);
 
-    Mono<EmployeeDTO> createEmployee(EmployeeDTO employee);
+    Mono<EmployeeDto> createEmployee(EmployeeDto employee);
+    
+    Mono<EmployeeDto> updateEmployee(EmployeeDto employeeDTO);
 }

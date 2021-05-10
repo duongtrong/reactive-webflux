@@ -40,8 +40,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Mono<EmployeeDTO> createEmployee(EmployeeDTO employeeDTO) {
-        ExecutorService executorService = new java.util.concurrent.ThreadPoolExecutor(6, 50,
-                60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         return Mono.fromCallable(
                 () -> Employee.builder()
                         .username(employeeDTO.getUsername())
@@ -51,7 +49,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                         .build())
                 .flatMap(
                         x -> employeeRepository.existsByUsername(x.getUsername()).log()
-                                .publishOn(Schedulers.fromExecutorService(executorService))
                                 .flatMap(
                                         exist -> {
                                             if (Boolean.TRUE.equals(exist)) {

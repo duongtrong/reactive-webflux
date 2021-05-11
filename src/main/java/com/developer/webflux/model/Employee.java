@@ -50,6 +50,9 @@ public class Employee implements Serializable {
     @Column(name = "age")
     private int age;
 
+    @Column(name = "status")
+    private int status;
+
     @Override
     public String toString() {
         return new Gson().toJson(this);

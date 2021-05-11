@@ -28,4 +28,12 @@ public class ResponseEntityUtil {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseEntity);
     }
+
+    public static ResponseEntity<Object> noContent() {
+        EmployeeAPIResponseEntity<Object> responseEntity = EmployeeAPIResponseEntity.builder()
+                .code(ResponseEntityStatusConstant.NO_CONTENT.getCode())
+                .message(ResponseEntityStatusConstant.NO_CONTENT.getMessage())
+                .build();
+        return ResponseEntity.ok(responseEntity);
+    }
 }

@@ -2,6 +2,7 @@ package com.developer.webflux.service;
 
 import com.developer.webflux.dto.EmployeeDto;
 import com.developer.webflux.model.Employee;
+import io.reactivex.Completable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -17,10 +18,14 @@ import reactor.core.publisher.Mono;
 public interface EmployeeService {
 
     Flux<EmployeeDto> getAllEmployees();
-    
+
     Mono<Employee> getSingleEmployee(String id);
 
     Mono<EmployeeDto> createEmployee(EmployeeDto employee);
-    
-    Mono<EmployeeDto> updateEmployee(EmployeeDto employeeDTO);
+
+    Mono<EmployeeDto> updateEmployee(final String id, Mono<EmployeeDto> employeeDTO);
+
+    Mono<Void> deleteEmployee(String id);
+
+    Completable deleteEmployees(String id);
 }

@@ -1,9 +1,12 @@
 package com.developer.webflux.service;
 
+import com.developer.webflux.constant.Status;
 import com.developer.webflux.dto.EmployeeDto;
 import com.developer.webflux.exception.CustomException;
 import com.developer.webflux.model.Employee;
 import com.developer.webflux.repository.EmployeeRepository;
+import com.developer.webflux.repository.EmployeeRxJavaRepository;
+import io.reactivex.Completable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
+    private final EmployeeRxJavaRepository employeeRxJavaRepository;
+
     @Override
     public Flux<EmployeeDto> getAllEmployees() {
         return employeeRepository.findAll()
@@ -46,6 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .fullName(employeeDTO.getFullName())
                 .dateOfBirth(employeeDTO.getDateOfBirth())
                 .age(employeeDTO.getAge())
+                .status(Status.ACTIVE.getValue())
                 .build())
                 .flatMap(x -> employeeRepository.existsByUsername(x.getUsername())
                         .flatMap(exist -> {
@@ -60,14 +66,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Mono<EmployeeDto> updateEmployee(EmployeeDto employeeDTO) {
-        return this.getSingleEmployee(employeeDTO.getId())
-                .flatMap(e -> {
-                    e.setFullName(employeeDTO.getFullName());
-                    e.setUsername(employeeDTO.getUsername());
-                    e.setDateOfBirth(employeeDTO.getDateOfBirth());
-                    e.setAge(employeeDTO.getAge());
-                    return employeeRepository.save(e);
-                }).log().map(EmployeeDto::new);
+    public Mono<EmployeeDto> updateEmployee(final String id, Mono<EmployeeDto> employeeDTO) {
+        return this.getSingleEmployee(id)
+                .flatMap(e -> employeeDTO.map(u -> {
+                    e.setFullName(u.getFullName());
+                    e.setUsername(u.getUsername());
+                    e.setDateOfBirth(u.getDateOfBirth());
+                    e.setAge(u.getAge());
+                    return e;
+                }).flatMap(employeeRepository::save)
+                        .log().map(EmployeeDto::new));
+    }
+
+    @Override
+    public Mono<Void> deleteEmployee(String id) {
+        return employeeRepository.findById(id).flatMap(employeeRepository::delete);
+    }
+
+    @Override
+    public Completable deleteEmployees(String id) {
+        return Completable.fromCallable(() -> employeeRxJavaRepository.deleteById(id));
     }
 }

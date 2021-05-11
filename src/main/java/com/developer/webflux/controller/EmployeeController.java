@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,20 +43,25 @@ public class EmployeeController extends AbstractEndpoint {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<Object>> createEmployee(@Validated @RequestBody EmployeeDto employeeDTO) {
+    public Mono<ResponseEntity<Object>> createEmployee(@Validated @RequestBody Mono<EmployeeDto> employeeDTO) {
         log.info("Request created new object employee.");
-        return employeeService.createEmployee(employeeDTO).map(ResponseEntityUtil::created);
+        return employeeDTO.flatMap(employeeService::createEmployee).map(ResponseEntityUtil::created);
     }
-    
-    @PutMapping
-    public Mono<ResponseEntity<Object>> updateEmployee(@Validated @RequestBody EmployeeDto employeeDTO) {
+
+    @PutMapping("/{id}")
+    public Mono<ResponseEntity<Object>> updateEmployee(@PathVariable("id") String id, @Validated @RequestBody Mono<EmployeeDto> employeeDTO) {
         log.info("Request update object employee.");
-        return employeeService.updateEmployee(employeeDTO).map(ResponseEntityUtil::ok);
+        return employeeService.updateEmployee(id, employeeDTO).map(ResponseEntityUtil::ok);
     }
-    
+
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Object>> getEmployee(@PathVariable("id") String id) {
         log.info("Request get employee by ID: {}", id);
         return employeeService.getSingleEmployee(id).map(EmployeeDto::new).map(ResponseEntityUtil::ok);
+    }
+
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<Void>> deleteEmployee(@PathVariable("id") String id) {
+        return employeeService.deleteEmployee(id).map(result -> ResponseEntity.noContent().build());
     }
 }

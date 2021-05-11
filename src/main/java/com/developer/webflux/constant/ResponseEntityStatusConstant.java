@@ -14,6 +14,7 @@ public enum ResponseEntityStatusConstant {
     
     SUCCESS(200, "Success"),
     CREATED(201, "Success"),
+    NO_CONTENT(204, "No Content"),
     BAD_REQUEST(400, "Bad Request");
     
     private int code;
